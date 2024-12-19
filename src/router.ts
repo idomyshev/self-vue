@@ -4,6 +4,8 @@ import { getAuthToken, getAuthUser } from "@/helpers/auth";
 import { useAppStore } from "@/store/appStore";
 import { lang } from "@/lang";
 
+import { UniversalObjectsIds } from "@/universal/enums";
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -22,14 +24,14 @@ const router = createRouter({
       name: routes.dashboard.name,
       component: () => import("@/views/DashboardView.vue"),
     },
-    {
-      path: routes.words.path,
-      name: routes.words.name,
-      component: () => import("@/modules/dictionary/views/WordsView.vue"),
-      meta: {
-        title: lang.title.wordsApp,
-      },
-    },
+    // {
+    //   path: routes.words.path,
+    //   name: routes.words.name,
+    //   component: () => import("@/modules/dictionary/views/WordsView.vue"),
+    //   meta: {
+    //     title: lang.title.wordsApp,
+    //   },
+    // },
     {
       path: routes.login.path,
       name: routes.login.name,
@@ -78,6 +80,28 @@ const router = createRouter({
           component: () =>
             import("@/modules/credentials/components/CredentialTypes.vue"),
           name: routes.credentialsTypes.name,
+        },
+      ],
+    },
+    {
+      path: routes.wordsTraining.path,
+      name: routes.wordsTraining.name,
+      component: () =>
+        import("@/modules/dictionary/views/WordsTrainingView.vue"),
+      meta: {
+        title: lang.title.wordsApp,
+      },
+      children: [
+        {
+          path: routes.words.path,
+          component: () =>
+            import(
+              "@/modules/dictionary/components/UniversalRepresentation.vue"
+            ),
+          name: routes.words.name,
+          props: {
+            objectId: UniversalObjectsIds.Credentials,
+          },
         },
       ],
     },

@@ -24,6 +24,10 @@ const props = defineProps({
     type: Array as PropType<UniversalTableColumn[]>,
     required: true,
   },
+  valueField: {
+    type: String,
+    default: "name",
+  },
   actionButtonText: String,
   tableModeByDefault: Boolean,
   withoutModeSwitcher: Boolean,
@@ -63,7 +67,7 @@ const changeMode = () => {
           :config="
             config
               .filter((item) => item.filterable)
-              .map((item) => pick(item, ['name', 'label']))
+              .map((item) => pick(item, [valueField, 'label']))
           "
         />
       </div>
@@ -84,9 +88,12 @@ const changeMode = () => {
     </div>
     <div class="universal-items__container">
       <div class="universal-items__inner-container">
-        <div class="items" v-if="!isTableMode">
+        <div v-if="!isTableMode" class="items">
           <div v-for="item in dataFiltered" :key="item.id" class="item">
-            <template v-for="(column, index) in config" :key="column.name">
+            <template
+              v-for="(column, index) in config"
+              :key="column[valueField]"
+            >
               <div v-if="!column.hidden" class="data-item">
                 <div v-if="!column.hiddenLabel" class="label">
                   {{ column.label }}
@@ -103,22 +110,22 @@ const changeMode = () => {
           </div>
         </div>
         <DataTable
-          v-if="isTableMode"
+          v-else
           scrollable
           :show-gridlines="true"
           :striped-rows="true"
           :row-hover="true"
           :value="dataFiltered"
-          :sort-field="config.find((item) => item.defaultSort)?.name"
+          :sort-field="config.find((item) => item.defaultSort)?.[valueField]"
           :sort-order="
             config.find((item) => item.defaultSortOrder)?.defaultSortOrder
           "
           v-bind="$attrs"
         >
-          <template v-for="column in config" :key="column.name">
+          <template v-for="column in config" :key="column[valueField]">
             <Column
               v-if="!column.hidden"
-              :field="column.name"
+              :field="column[valueField]"
               :header="column.label"
               :sortable="column.sortable"
             >
@@ -211,14 +218,14 @@ const changeMode = () => {
 
 .items {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
-  //flex-wrap: wrap;
   height: 100%;
   overflow-y: auto;
 }
 
 .item {
-  //width: 200px;
+  width: 200px;
   border: 1px solid #666;
   border-radius: 3px;
   padding: 10px;

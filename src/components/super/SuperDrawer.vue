@@ -7,7 +7,6 @@ import { showToast } from "@/helpers/toast";
 import { ToastType } from "@/types/toasts";
 import { lang } from "@/lang";
 import { cloneDeep, isEqual } from "lodash";
-import { IEntity } from "@/settings/entities";
 import { prepareName } from "@/helpers/strings";
 import UniversalText from "@/components/fields/UniversalText.vue";
 import UniversalDialog from "@/components/dialogs/UniversalDialog.vue";
@@ -16,15 +15,7 @@ import UniversalSelector from "@/components/fields/UniversalSelector.vue";
 import UniversalTextarea from "@/components/fields/UniversalTextarea.vue";
 import { useUniversalDatabaseStore } from "@/store/universalDatabaseStore";
 import type { FieldConfig, Instance, ObjectConfig } from "@/types/common";
-import { FieldsTypes } from "@/types/common";
-
-interface DrawerState {
-  id: string | null;
-  name: string;
-  typeId: string | null;
-  description: string;
-  password: string;
-}
+import { FieldsTypes, noDrawerFieldsTypes } from "@/types/common";
 
 // TODO Make universal.
 interface IsInputStarted {
@@ -40,14 +31,6 @@ interface ErrorsDetails {
   description: string[];
 }
 
-const initialState: DrawerState = {
-  id: null,
-  name: "",
-  typeId: null,
-  description: "",
-  password: "",
-};
-
 const isInputStartedInitialValue = {
   name: false,
   password: false,
@@ -57,7 +40,6 @@ const isInputStartedInitialValue = {
 const sidebar = ref<InstanceType<typeof UniversalDrawer>>();
 const discardChangesDialog = ref<InstanceType<typeof UniversalDrawer>>();
 const isInputStarted = reactive<IsInputStarted>(isInputStartedInitialValue);
-const currentState = reactive<DrawerState>({ ...initialState });
 
 const superCurrentState = ref<Record<string, any>>({});
 const superSavedState = ref<Record<string, any>>({});
@@ -111,23 +93,23 @@ const errorDetails = computed<ErrorsDetails>(() => {
 
   // TODO Restore for Universal object.
   // Name.
-  if (!prepareName(currentState.name)) {
-    errors.name.push(lang.error.entityShouldNotBeEmpty(IEntity.CredentialName));
-  }
+  // if (!prepareName(currentState.name)) {
+  //   errors.name.push(lang.error.entityShouldNotBeEmpty(IEntity.CredentialName));
+  // }
 
   // TODO Restore for Universal object.
   // Type.
-  if (!currentState.typeId) {
-    errors.type.push(lang.error.entityShouldNotBeEmpty(IEntity.CredentialType));
-  }
+  // if (!currentState.typeId) {
+  //   errors.type.push(lang.error.entityShouldNotBeEmpty(IEntity.CredentialType));
+  // }
 
   // TODO Restore for Universal object.
   // Password.
-  if (!prepareName(currentState.password)) {
-    errors.password.push(
-      lang.error.entityShouldNotBeEmpty(IEntity.CredentialPassword)
-    );
-  }
+  // if (!prepareName(currentState.password)) {
+  //   errors.password.push(
+  //     lang.error.entityShouldNotBeEmpty(IEntity.CredentialPassword)
+  //   );
+  // }
 
   return errors;
 });
@@ -230,7 +212,7 @@ watch(
     }
 
     fieldsConfig.value.forEach((field: any) => {
-      if (field.type === FieldsTypes.Id) {
+      if (noDrawerFieldsTypes.includes(field.type)) {
         return;
       }
 
@@ -282,29 +264,32 @@ defineExpose({
     @click:close="close"
   >
     <div class="super-drawer">
-      <UniversalField
-        :label="field.label"
-        v-for="field in fieldsConfig"
-        :key="field.id"
-      >
-        <UniversalText
-          v-if="[FieldsTypes.String, FieldsTypes.Password].includes(field.type)"
-          v-model="superCurrentState[field.id]"
-          v-model:is-input-started="superIsInputStarted[field.id]"
-          :errors="superErrorDetails[field.id]"
-        />
-        <UniversalSelector
-          v-if="field.type === FieldsTypes.Selector"
-          v-model="superCurrentState[field.id]"
-          :options="getOptions(field)"
-          :label-field="field.linkedObjectFieldId"
-        />
-        <UniversalTextarea
-          v-if="field.type === FieldsTypes.Text"
-          v-model="superCurrentState[field.id]"
-          :errors="superErrorDetails[field.id]"
-        />
-      </UniversalField>
+      <template v-for="field in fieldsConfig" :key="field.id">
+        <UniversalField
+          v-if="!noDrawerFieldsTypes.includes(field.type)"
+          :label="field.label"
+        >
+          <UniversalText
+            v-if="
+              [FieldsTypes.String, FieldsTypes.Password].includes(field.type)
+            "
+            v-model="superCurrentState[field.id]"
+            v-model:is-input-started="superIsInputStarted[field.id]"
+            :errors="superErrorDetails[field.id]"
+          />
+          <UniversalSelector
+            v-if="field.type === FieldsTypes.Selector"
+            v-model="superCurrentState[field.id]"
+            :options="getOptions(field)"
+            :label-field="field.linkedObjectFieldId"
+          />
+          <UniversalTextarea
+            v-if="field.type === FieldsTypes.Text"
+            v-model="superCurrentState[field.id]"
+            :errors="superErrorDetails[field.id]"
+          />
+        </UniversalField>
+      </template>
     </div>
     <template #buttons-after>
       <UniversalButton

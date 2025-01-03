@@ -4,7 +4,7 @@ import { getAuthToken, getAuthUser } from "@/helpers/auth";
 import { useAppStore } from "@/store/appStore";
 import { lang } from "@/lang";
 
-import { UniversalObjectsIds } from "@/universal/enums";
+import { mapUniversalRoutes } from "@/universal/universalRoutes";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -44,74 +44,7 @@ const router = createRouter({
       name: routes.changePassword.name,
       component: () => import("@/views/ChangePassword.vue"),
     },
-    {
-      path: routes.schedule.path,
-      name: routes.schedule.name,
-      component: () => import("@/modules/schedule/views/ScheduleView.vue"),
-      meta: {
-        title: lang.title.clientsSchedule,
-      },
-    },
-    {
-      path: routes.credentials.path,
-      name: routes.credentials.name,
-      component: () =>
-        import("@/modules/credentials/views/CredentialsView.vue"),
-      meta: {
-        title: lang.title.credentials,
-      },
-      children: [
-        {
-          path: routes.credentialsCredentials.path,
-          component: () =>
-            import("@/modules/credentials/components/Credentials.vue"),
-          name: routes.credentialsCredentials.name,
-        },
-        {
-          path: routes.credentialsTypes.path,
-          component: () =>
-            import("@/modules/credentials/components/CredentialTypes.vue"),
-          name: routes.credentialsTypes.name,
-        },
-      ],
-    },
-    {
-      path: routes.learnEspanol.path,
-      name: routes.learnEspanol.name,
-      component: () => import("@/views/LearnEspanolView.vue"),
-      meta: {
-        title: lang.title.learnEspanol,
-      },
-      children: [
-        {
-          path: routes.learnEspanolVerbs.path,
-          component: () =>
-            import("@/components/super/UniversalRepresentation.vue"),
-          name: routes.learnEspanolVerbs.name,
-          props: {
-            objectId: UniversalObjectsIds.Verbs,
-          },
-        },
-        {
-          path: routes.learnEspanolVerbsForms.path,
-          component: () =>
-            import("@/components/super/UniversalRepresentation.vue"),
-          name: routes.learnEspanolVerbsForms.name,
-          props: {
-            objectId: UniversalObjectsIds.VerbsForms,
-          },
-        },
-        {
-          path: routes.learnEspanolVerbsPronombres.path,
-          component: () =>
-            import("@/components/super/UniversalRepresentation.vue"),
-          name: routes.learnEspanolVerbsPronombres.name,
-          props: {
-            objectId: UniversalObjectsIds.VerbsPronombres,
-          },
-        },
-      ],
-    },
+    ...mapUniversalRoutes(),
   ],
 });
 

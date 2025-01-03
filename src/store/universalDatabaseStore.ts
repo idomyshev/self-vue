@@ -1,14 +1,14 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import type { IUniversalDatabase } from "@/modules/credentials/types";
+import type { IUniversalDatabase } from "@/types/universalDatabase";
 import { v4 as uuidv4 } from "uuid";
-import { UniversalDatabase } from "@/modules/credentials/classes/UniversalDatabase";
+import { UniversalDatabase } from "@/classes/UniversalDatabase";
 
 import { UniversalDatabasesIds } from "@/universal/enums";
 import type { Instance } from "@/types/common";
 import { FieldsTypes } from "@/types/common";
 import { getTableConfigByObjectId } from "@/settings/entities";
-import { maxBy, minBy } from "lodash";
+import { maxBy } from "lodash";
 import { initializeOrders } from "@/helpers/common";
 
 export const useUniversalDatabaseStore = defineStore(
@@ -112,10 +112,12 @@ export const useUniversalDatabaseStore = defineStore(
           });
         }
       } else {
-        database.data[params.objectId].push({
-          id: uuidv4(),
+        const itemToAdd = {
           ...instance,
-        });
+          id: uuidv4(),
+        };
+
+        database.data[params.objectId].push(itemToAdd);
       }
 
       await UniversalDatabase.save(params.databaseId);
@@ -189,30 +191,6 @@ export const useUniversalDatabaseStore = defineStore(
 
       databases.value[databaseIndex] = databaseData;
     };
-
-    //
-    // const fileId = ref();
-    //
-    // const updateCredentialDatabase = (database: ICredentialDatabase) => {
-    //   Object.assign(credentialDatabase, database);
-    // };
-    //
-    // const updateFileId = (id: string) => {
-    //   fileId.value = id;
-    // };
-    //
-    // const unloadCredentialDatabase = () => {
-    //   Object.assign(credentialDatabase, cloneDeep(initialDatabaseState));
-    //   fileId.value = undefined;
-    // };
-    //
-    // return {
-    //   credentialDatabase,
-    //   fileId,
-    //   updateCredentialDatabase,
-    //   unloadCredentialDatabase,
-    //   updateFileId,
-    // };
 
     return {
       getDatabase,

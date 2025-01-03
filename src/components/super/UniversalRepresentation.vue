@@ -6,8 +6,8 @@ import UniversalDialog from "@/components/dialogs/UniversalDialog.vue";
 import { useRoute } from "vue-router";
 import router from "@/router";
 import SuperDrawer from "@/components/super/SuperDrawer.vue";
-import { UniversalDatabase } from "@/modules/credentials/classes/UniversalDatabase";
-import type { IUniversalDatabase } from "@/modules/credentials/types";
+import { UniversalDatabase } from "@/classes/UniversalDatabase";
+import type { IUniversalDatabase } from "@/types/universalDatabase";
 import { useUniversalDatabaseStore } from "@/store/universalDatabaseStore";
 import type { FieldConfig, Instance, ObjectConfig } from "@/types/common";
 import { FieldsTypes } from "@/types/common";
@@ -266,13 +266,13 @@ onMounted(async () => {
     :object-config="objectConfig"
   />
   <UniversalDialog
-    :title="$lang.title.confirmDeleteCredentialType"
+    :title="$lang.title.confirmAction"
     ref="confirmDeleteItemDialog"
     @cancel="handleCancelDeleteItem"
     @confirm="handleConfirmDeleteItem"
     :z-index="1200"
   >
-    {{ $lang.phrase.doYouConfirmDeleteCredentialType }}
+    {{ $lang.phrase.confirmDeleteItem }}
   </UniversalDialog>
 </template>
 

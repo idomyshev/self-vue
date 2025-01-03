@@ -1,17 +1,6 @@
-import type { DrawerConfig, FieldConfig } from "@/types/common";
-import { tablesConfigs } from "@/universal/tablesConfigs";
-import type { TableConfig } from "@/types/tables";
+import type { FieldConfig } from "@/types/common";
 import { fieldsConfigs } from "@/universal/fieldsConfigs";
 import { UniversalDatabasesIds, UniversalObjectsIds } from "@/universal/enums";
-
-export enum IEntity {
-  Credential = "credential",
-  CredentialType = "credentialType",
-  CredentialTypeName = "credentialTypeName",
-  CredentialName = "credentialName",
-  CredentialDescription = "credentialDescription",
-  CredentialPassword = "credentialPassword",
-}
 
 interface IUniversalObject {
   id: UniversalObjectsIds;
@@ -46,7 +35,7 @@ export const getDatabaseIdByObjectId = (objectId: string): string => {
   return object.databaseId;
 };
 
-export const getDrawerConfigByObjectId = (objectId: string): DrawerConfig => {
+export const getDrawerConfigByObjectId = (objectId: string): FieldConfig[] => {
   const config = fieldsConfigs[objectId];
 
   if (!config) {
@@ -59,7 +48,7 @@ export const getDrawerConfigByObjectId = (objectId: string): DrawerConfig => {
 };
 
 export const getTableConfigByObjectId = (objectId: string): FieldConfig[] => {
-  const config = tablesConfigs[objectId];
+  const config = fieldsConfigs[objectId];
 
   if (!config) {
     throw new Error(
